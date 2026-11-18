@@ -121,7 +121,7 @@ Validação em cópia limpa do commit (Node v24.22.3, npm 11.19.1):
 | --- | --- |
 | `npm ci` | `found 0 vulnerabilities`. |
 | `npm run typecheck` / `npm run lint` / `npm run build` | Passaram, sem avisos no build nem no `next start`. |
-| `node qa/landing.cjs http://localhost:3100/` | 125 verificações ok, 0 falhas. Inclui 26 verificações do fluxo de cotação em 1440 e 390 px. |
+| `node qa/landing.cjs http://localhost:3100/` | 125 verificações ok, 0 falhas. Inclui 25 verificações do fluxo de cotação (1440 e 390 px e `/#cotacao`) e o link de WhatsApp quando não há JavaScript. |
 | axe-core 4 | 0 violações na home, no modal e no painel de cotação (com erros de validação visíveis), em celular e desktop. |
 
 Peso medido localmente sem compressão: JS 520 KB (155 KB gzip; antes 150 KB), fontes 69 KB, imagens no carregamento inicial 308 KB no desktop e 142 KB no celular (as demais carregam ao rolar). LCP local de cerca de 0,7 s.
