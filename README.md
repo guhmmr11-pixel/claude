@@ -1,197 +1,61 @@
-# Fluency Wealth MVP v1
+# Sinal Digital | Site institucional
 
-MVP funcional de uma plataforma premium de aprendizado de inglês com foco em Business English e Finance English, trilha visual estilo progressão gamificada, chat com agente professor, News Lab, speaking e dicionário pessoal.
+Landing institucional B2B da Sinal Digital: portfólio em seis áreas de atuação, processo consultivo, diferenciais e contato comercial com mailing. Next.js 16 (App Router), React 19, TypeScript e Tailwind CSS 3.
 
-## Status da entrega
+## Rodar localmente
 
-Esta entrega consolida o app como uma versao `v1` pronta para demo, com foco em apresentacao e consistencia do produto.
-
-### Ja pronto
-
-- dashboard premium com progresso, streak, XP e recomendacoes
-- learning path com 150 modulos e logica 70/30
-- coach chat com UX pronta e arquitetura OpenAI-ready
-- News Lab com curadoria premium mockada e fluxo pedagogico editorial
-- speaking, dictionary e review prontos para demo
-- navegacao fluida entre dashboard, learn, chat, news lab, speaking, dictionary e review
-
-### Ainda mockado
-
-- respostas ao vivo do coach dependem de `OPENAI_API_KEY`
-- feed de noticias continua mockado
-- speaking continua mockado
-- dicionario e progresso ainda nao sao persistidos por usuaria
-
-### Proxima fase
-
-- ativar OpenAI em producao
-- persistir progresso, dicionario e historico
-- integrar API premium de noticias
-- evoluir speaking e revisao com IA
-
-## Arquitetura proposta
-
-O app foi estruturado para crescer como produto:
-
-- `app/`: rotas do Next.js App Router, páginas principais e API routes mockadas.
-- `components/`: blocos visuais reutilizáveis e views por feature.
-- `data/`: mocks realistas, currículo da trilha, progresso e prompt do agente pedagógico.
-- `lib/`: utilitários compartilhados.
-- `types/`: tipagem de domínio.
-
-### Decisões de produto e engenharia
-
-- Trilha com `150` módulos e distribuição curricular de `70% business/finance` e `30% general English`.
-- Visual premium com navegação lateral, cards, gradientes suaves e ritmo de progressão.
-- Mocks preparados para demonstrar UX de ponta sem bloquear o MVP por integrações externas.
-- API routes já separadas para futura conexão com OpenAI, notícias, speaking e persistência.
-- Curadoria editorial do News Lab preparada para whitelist de fontes premium e fallback mockado.
-
-## Funcionalidades entregues
-
-- Dashboard com progresso geral, streak, XP, recomendação automática e últimas atividades.
-- Trilha de aprendizado com mapa visual, checkpoints e módulos concluídos/atuais/bloqueados.
-- News Lab com artigo mockado, leitura guiada, vocabulário-chave e interpretação.
-- News Lab refinado com filtros editoriais, credibilidade visível da fonte, expressões de business/finance e fluxo de estudo mais robusto.
-- Chat com agente professor em fluxo mockado, com arquitetura pronta para OpenAI.
-- Speaking com prompt, transcrição, score por critério, feedback e resposta aprimorada.
-- Dicionário pessoal com origem, definição, tradução, exemplo e status de revisão.
-- Área de revisão com flashcards simples e lógica inicial de reforço.
-
-## Como rodar
-
-Pré-requisitos:
-
-- Node.js 20+
-- npm 10+ ou equivalente
-
-Instale as dependências:
+Pré-requisito: Node.js 24 LTS (o mesmo usado na validação e fixado em `engines`). O Next.js 16 aceita Node ≥ 20.9, mas o SDK `openai` do app legado exige Node ≥ 22.
 
 ```bash
-npm install
-```
-
-Crie um arquivo `.env.local` na raiz do projeto:
-
-```bash
-cp .env.example .env.local
-```
-
-Defina a sua chave:
-
-```env
-OPENAI_API_KEY=your_openai_api_key_here
-OPENAI_MODEL=gpt-4.1-mini
-```
-
-Depois rode o app:
-
-```bash
+npm ci
 npm run dev
 ```
 
-Acesse `http://localhost:3000`.
+No Windows, use `npm.cmd ci` e `npm.cmd run dev` se o PowerShell bloquear `npm.ps1`. Abra o endereço exibido pelo Next.js. `localhost` só funciona na sua máquina; o link público vem da publicação (veja [docs/PUBLICACAO.md](docs/PUBLICACAO.md)).
 
-## Demo v1
+| Script | Uso |
+| --- | --- |
+| `npm run dev` | Servidor de desenvolvimento. |
+| `npm run build` | Build de produção (o mesmo comando da Vercel). |
+| `npm run start` | Serve o build de produção localmente. |
+| `npm run lint` | ESLint 9 com `eslint-config-next` (o `next lint` foi removido no Next.js 16). |
+| `npm run typecheck` | Gera os tipos de rota (`next typegen`) e roda `tsc --noEmit`. |
+| `node qa/landing.cjs <url>` | Roteiro de QA no navegador (viewports, âncoras, modal, links, mailing, rotas). Requer Playwright: `npm install --no-save playwright && npx playwright install chromium`. |
 
-Esta versao foi finalizada para apresentacao, sem depender de novas integracoes complexas.
+## Estrutura da página
 
-- o chat permanece OpenAI-ready, mas a UI continua apresentavel sem chave
-- o News Lab usa mock data premium com aparencia editorial forte
-- a base esta organizada para crescer sem retrabalho
+Ordem em `app/page.tsx`: header, hero, soluções, benefícios, processo, diferenciais, contato com mailing, rodapé e WhatsApp flutuante. Âncoras do menu: `#inicio`, `#solucoes`, `#beneficios`, `#processo` e `#contato`. A seção de diferenciais também tem `#diferenciais`.
 
-## Chat Coach com OpenAI
+## Onde editar
 
-O chat do professor agora usa a OpenAI Responses API.
+| O quê | Arquivo |
+| --- | --- |
+| Telefone, e-mail, responsável comercial, mensagens de WhatsApp, logotipo e foto do hero | `data/site.ts` |
+| Famílias de soluções (nome, subtítulo, resumo, itens, descrição completa, ícone e imagem) | `data/solutions.ts` |
+| Menu | `components/sinal-digital/nav-items.ts` |
+| Hero (H1, CTAs, selos, vitrine de equipamentos) | `components/sinal-digital/hero.tsx` |
+| Card, visual da família e modal de detalhes | `components/sinal-digital/solution-card.tsx`, `solution-visual.tsx`, `solution-modal.tsx` |
+| Benefícios, processo e diferenciais | `components/sinal-digital/benefits.tsx`, `validation-steps.tsx`, `why-sinal-digital.tsx` |
+| Contato e mailing | `components/sinal-digital/contact.tsx`, `mailing-form.tsx` |
+| Cores da marca | `tailwind.config.ts` (`brand.*` e `whatsapp.*`) |
+| Título e descrição para buscadores | `app/layout.tsx` |
 
-Arquivos principais:
+## Imagens e logotipo
 
-- `app/api/teacher/route.ts`: endpoint da aplicação
-- `lib/openai.ts`: inicialização do cliente OpenAI
-- `lib/ai/teacher.ts`: serviço do professor com montagem de contexto
-- `data/agent-prompt.ts`: instrução principal do agente
-- `app/chat/page.tsx`: página do chat
-- `components/chat-coach.tsx`: experiência do chat no front
+O site funciona sem imagens: cada família mostra o ícone em um círculo claro, e o hero mostra uma vitrine de equipamentos por ícones. Quando a empresa enviar fotos com uso autorizado ou o logotipo oficial, siga [docs/ASSETS.md](docs/ASSETS.md). Os arquivos ficam em `public/images/`.
 
-### Como funciona
+## Mailing
 
-- O front envia mensagens no formato simples `role` + `content`.
-- O endpoint valida o payload e encaminha para a camada `lib/ai/teacher.ts`.
-- O serviço combina o prompt pedagógico com contexto da usuária:
-  - nível
-  - progresso
-  - módulo atual
-  - erros recorrentes
-  - foco `70/30 business-general`
-- A resposta volta para a interface com estados de carregamento, erro e resposta vazia tratados.
+Primeira fase sem backend: ao enviar, o formulário valida os campos e abre o aplicativo de e-mail do visitante com uma mensagem pronta para `decio@sinaldig.com.br`. O cadastro só chega quando o visitante envia esse e-mail, e a interface diz isso antes e depois do clique. Se nada abrir, há um botão para copiar a mensagem.
 
-### Persistência futura
+O ponto de integração futura (API, Formspree, EmailJS, Google Sheets ou CRM) está comentado em `handleSubmit`, em `components/sinal-digital/mailing-form.tsx`. Antes de integrar, defina destino, opt-in, política de dados e proteção antispam.
 
-O payload do chat já foi estruturado para suportar persistência futura com Supabase sem acoplar o front ao provider:
+## App legado no mesmo repositório
 
-- histórico de mensagens
-- perfil e nível da usuária
-- progresso atual
-- erros recorrentes
-- contexto do módulo
+O projeto nasceu da base de um app de Business English. O código continua aqui (`app/learn`, `app/chat`, `app/news-lab`, `app/speaking`, `app/dictionary`, `app/review`, `app/api/*`, componentes e dados correspondentes). Na implantação institucional, `proxy.ts` responde 404 para essas rotas. Para reativá-las num ambiente separado, defina `ENABLE_LEGACY_APP=true`. Nenhuma chave de IA está conectada ao site. A documentação original do app está em [docs/legacy/FLUENCY-WEALTH-README.md](docs/legacy/FLUENCY-WEALTH-README.md).
 
-## Rotas principais
+## Documentação
 
-- `/`
-- `/learn`
-- `/chat`
-- `/news-lab`
-- `/speaking`
-- `/dictionary`
-- `/review`
-
-## Integrações futuras sugeridas
-
-1. Conectar autenticação e banco com Supabase.
-2. Persistir progresso, dicionário, sessões de chat e speaking.
-3. Integrar o agente pedagógico real com OpenAI usando `data/agent-prompt.ts`.
-4. Buscar notícias reais e gerar atividades dinamicamente.
-5. Conectar Web Speech API para speaking real.
-6. Adicionar lógica real de desbloqueio, revisão espaçada e analytics pedagógicos.
-
-## Estratégia de fontes do News Lab
-
-O News Lab foi refinado para usar apenas fontes premium e confiáveis de business/economia na camada editorial:
-
-- Financial Times
-- The Wall Street Journal
-- Bloomberg
-- Reuters
-- CNBC
-- The Economist
-- New York Times Business
-- Harvard Business Review
-
-### Regras editoriais
-
-- priorizar artigos recentes
-- priorizar alta utilidade para business English e finance English
-- manter a lógica de `70% business/finance` e `30% general professional English`
-- exibir claramente credibilidade e motivo editorial da seleção
-- evitar fontes genéricas, fracas ou sensacionalistas
-
-### Estratégia técnica
-
-- A whitelist de fontes vive em `data/news-sources.ts`.
-- O endpoint `app/api/news/route.ts` já expõe `acceptedSources` e `sourceMode`.
-- Se uma API futura não permitir filtrar adequadamente por essas fontes, o app pode continuar operando com fallback mockado premium sem perda de qualidade.
-- Cada artigo é transformado em experiência pedagógica com:
-  - manchete original
-  - fonte
-  - data
-  - categoria
-  - resumo simplificado
-  - vocabulário-chave
-  - expressões úteis
-  - perguntas de compreensão
-  - guia de correção
-  - sugestões para salvar no dicionário
-
-## Observação
-
-Neste ambiente, `node`, `npm` e `git` não estavam disponíveis para execução, então o projeto foi montado manualmente e não houve validação por build local. A estrutura está pronta para instalação e execução em um ambiente com Node configurado.
+- [docs/DIAGNOSTICO.md](docs/DIAGNOSTICO.md): diagnóstico do snapshot, atualização de dependências e resultados de validação.
+- [docs/PUBLICACAO.md](docs/PUBLICACAO.md): passo a passo de publicação na Vercel e verificação do link público.
+- [docs/ASSETS.md](docs/ASSETS.md): como adicionar logotipo oficial e fotos.

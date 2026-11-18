@@ -5,5 +5,10 @@ import nextTs from "eslint-config-next/typescript";
 export default defineConfig([
   ...nextVitals,
   ...nextTs,
+  {
+    // Scripts Node de QA (CommonJS, fora do bundle do site).
+    files: ["qa/**/*.cjs"],
+    rules: { "@typescript-eslint/no-require-imports": "off" }
+  },
   globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts"])
 ]);
