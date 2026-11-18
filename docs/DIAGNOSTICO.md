@@ -102,3 +102,26 @@ Medido com Playwright e tamanhos gzip calculados localmente.
 | Atual (Next 16.4.6) | 150,1 KB |
 
 O aumento vem do runtime: só o chunk do `react-dom` foi de 52 para 70 KB. O código próprio da landing (modal e mailing) é um chunk de cerca de 13 KB gzip. A fonte Inter adiciona 47 KB (woff2, subconjunto latino). Na Vercel, HTML, CSS e JS são servidos com compressão.
+
+## 7. Versão 2: nova identidade, fotos e cotação (18/11/2026)
+
+Pedido: identidade mais futurista e com transições, fotos no lugar dos ícones, fotos clicáveis que levam a uma cotação, foco no que o cliente precisa saber, contato e mailing mantidos.
+
+| Mudança | Detalhe |
+| --- | --- |
+| Identidade | Tema escuro (`space.*`), destaques ciano/azul (`signal.*`), títulos em Space Grotesk (`@fontsource-variable/space-grotesk`, OFL, local). Verde só no WhatsApp. |
+| Transições | Só CSS: entrada escalonada do topo, zoom lento no fundo, anéis de "sinal", header que vira vidro ao rolar (`animation-timeline: scroll()`), revelação, parallax das fotos e linha de progresso (`animation-timeline: view()`), brilho nas bordas dos cards e entrada dos diálogos. Com `prefers-reduced-motion: reduce`, nada se move. |
+| Fotos | 13 fotos ilustrativas do Unsplash (Unsplash License) em `public/images/`, servidas pelo `next/image` com placeholder desfocado. Origem de cada uma em `docs/ASSETS.md`. |
+| Cotação | Painel em `<dialog>` aberto pelas 6 fotos de equipamentos, pelos 6 cards, pelo modal, pelo header, pela seção "Como funciona" e por `/#cotacao`. Família e itens chegam marcados, e a seleção se acumula. Campos: itens, quantidade, prazo, cidade/UF, nome, empresa, WhatsApp, e-mail (opcional) e observações. Envio por WhatsApp ou e-mail com mensagem montada; sem backend nem preços. Sem JavaScript, os botões são links de WhatsApp. |
+| Conteúdo | O hero diz o que a empresa fornece. Benefícios e diferenciais viraram uma seção de 6 itens. O CTA "Consultar soluções" do hero foi substituído por "Solicitar cotação"; "Falar com um consultor" foi mantido. |
+
+Validação em cópia limpa do commit (Node v24.22.3, npm 11.19.1):
+
+| Comando | Resultado |
+| --- | --- |
+| `npm ci` | `found 0 vulnerabilities`. |
+| `npm run typecheck` / `npm run lint` / `npm run build` | Passaram, sem avisos no build nem no `next start`. |
+| `node qa/landing.cjs http://localhost:3100/` | 125 verificações ok, 0 falhas. Inclui 26 verificações do fluxo de cotação em 1440 e 390 px. |
+| axe-core 4 | 0 violações na home, no modal e no painel de cotação (com erros de validação visíveis), em celular e desktop. |
+
+Peso medido localmente sem compressão: JS 520 KB (155 KB gzip; antes 150 KB), fontes 69 KB, imagens no carregamento inicial 308 KB no desktop e 142 KB no celular (as demais carregam ao rolar). LCP local de cerca de 0,7 s.
