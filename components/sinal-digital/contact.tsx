@@ -1,101 +1,79 @@
-import { Mail, MessageCircle, Phone, UserRound } from "lucide-react";
+import { Mail, MessageCircle, Phone } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { MailingForm } from "@/components/sinal-digital/mailing-form";
-import { ScrollReveal } from "@/components/sinal-digital/scroll-reveal";
-
-const whatsappUrl =
-  "https://wa.me/5511999015519?text=Ol%C3%A1,%20gostaria%20de%20saber%20mais%20sobre%20as%20solu%C3%A7%C3%B5es%20da%20Sinal%20Digital";
-const emailUrl = "mailto:decio@sinaldig.com.br";
+import { SectionHeading } from "@/components/sinal-digital/section-heading";
+import { mailtoLink, site, whatsappLink } from "@/data/site";
 
 export function Contact() {
+  const { contact } = site;
+
   return (
-    <section id="contato" className="scroll-mt-28 bg-[#edf4fa] py-10 sm:py-12">
+    <section id="contato" aria-labelledby="contato-title" className="bg-brand-surface py-16 sm:py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <ScrollReveal className="mb-7 max-w-3xl">
-          <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-[#0B6ACB]">
-            Fale com a Sinal Digital
-          </p>
-          <h2 className="mt-2 text-2xl font-black tracking-tight text-[#052D5F] sm:text-3xl">
-            Receba orientação comercial e cadastre seu interesse.
-          </h2>
-          <p className="mt-3 text-sm leading-6 text-slate-600 sm:text-base">
-            Receba orientação comercial, tire dúvidas sobre soluções e cadastre-se
-            para receber novidades, condições e oportunidades.
-          </p>
-        </ScrollReveal>
+        <SectionHeading id="contato-title" eyebrow="Contato comercial" title="Fale com a Sinal Digital">
+          Receba orientação comercial, tire dúvidas sobre soluções e cadastre-se para receber
+          novidades, condições e oportunidades.
+        </SectionHeading>
 
-        <div className="grid gap-5 lg:grid-cols-[0.92fr_1.08fr]">
-          <ScrollReveal>
-            <div className="h-full rounded-3xl border border-cyan-200/15 bg-gradient-to-br from-[#031B3A] via-[#052D5F] to-[#0B6ACB] p-5 text-white shadow-2xl shadow-sky-950/18">
-              <p className="text-xs font-extrabold uppercase tracking-[0.22em] text-cyan-100">
-                Contato comercial
-              </p>
-              <h3 className="mt-3 text-2xl font-black">Décio Câmara</h3>
-              <p className="mt-1 text-sm font-bold text-cyan-100">Diretor Comercial</p>
+        <div className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+          <div className="reveal rounded-2xl bg-gradient-to-br from-brand-navy via-brand-deep to-brand-ink p-6 text-white shadow-[0_24px_60px_-30px_rgba(3,27,58,0.6)] sm:p-8 lg:sticky lg:top-24">
+            <p className="text-xs font-bold uppercase tracking-[0.22em] text-brand-cyan">
+              Atendimento comercial
+            </p>
+            <h3 className="mt-4 text-2xl font-bold">{contact.person}</h3>
+            <p className="mt-1 text-sm font-semibold text-slate-300">{contact.role}</p>
 
-              <div className="mt-6 grid gap-3">
-                <ContactRow icon={Phone} label="WhatsApp" value="(11) 99901-5519" />
-                <ContactRow icon={Mail} label="E-mail" value="decio@sinaldig.com.br" />
-              </div>
+            <ul className="mt-7 grid gap-3">
+              <ContactRow icon={Phone} label="WhatsApp" value={contact.phoneDisplay} />
+              <ContactRow icon={Mail} label="E-mail" value={contact.email} />
+            </ul>
 
-              <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                <a
-                  href={whatsappUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#075E54] px-4 py-3 text-sm font-black text-white shadow-lg shadow-emerald-950/15 transition hover:bg-[#128C7E] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500"
-                >
-                  <MessageCircle className="h-5 w-5" aria-hidden="true" />
-                  Entrar em contato pelo WhatsApp
-                </a>
-                <a
-                  href={emailUrl}
-                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/18 bg-white/10 px-4 py-3 text-sm font-black text-cyan-100 transition hover:bg-white/16 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500"
-                >
-                  <Mail className="h-5 w-5" aria-hidden="true" />
-                  Entrar em contato por e-mail
-                </a>
-              </div>
+            <div className="mt-7 grid gap-3">
+              <a
+                href={whatsappLink()}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-whatsapp px-5 text-sm font-bold text-whatsapp-ink transition-colors hover:bg-[#3BE07A] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              >
+                <MessageCircle className="h-5 w-5" aria-hidden="true" />
+                Entrar em contato pelo WhatsApp
+                <span className="sr-only"> (abre em nova aba)</span>
+              </a>
+              <a
+                href={mailtoLink({ subject: "Contato pelo site - Sinal Digital" })}
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-white/25 px-5 text-sm font-bold text-white transition-colors hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              >
+                <Mail className="h-5 w-5" aria-hidden="true" />
+                Entrar em contato por e-mail
+              </a>
             </div>
-          </ScrollReveal>
+          </div>
 
-          <ScrollReveal delay={90}>
-            <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-2xl shadow-sky-950/8">
-              <div className="mb-4 flex items-center gap-3">
-                <span className="grid h-11 w-11 place-items-center rounded-2xl bg-sky-50 text-[#063A78]">
-                  <UserRound className="h-5 w-5" aria-hidden="true" />
-                </span>
-                <div>
-                  <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-[#0B6ACB]">
-                    Mailing / cadastro de interesse
-                  </p>
-                  <h3 className="text-lg font-black text-[#052D5F]">Conte o que sua empresa procura</h3>
-                </div>
-              </div>
+          <div className="reveal rounded-2xl border border-brand-line bg-white p-6 shadow-[0_1px_2px_rgba(3,27,58,0.06)] sm:p-8">
+            <p className="text-xs font-bold uppercase tracking-[0.22em] text-brand-blue">
+              Mailing e cadastro de interesse
+            </p>
+            <h3 className="mt-3 text-xl font-bold text-brand-navy">Conte o que sua empresa procura</h3>
+            <div className="mt-6">
               <MailingForm />
             </div>
-          </ScrollReveal>
+          </div>
         </div>
       </div>
     </section>
   );
 }
 
-type ContactRowProps = {
-  icon: typeof Phone;
-  label: string;
-  value: string;
-};
-
-function ContactRow({ icon: Icon, label, value }: ContactRowProps) {
+function ContactRow({ icon: Icon, label, value }: { icon: LucideIcon; label: string; value: string }) {
   return (
-    <div className="flex items-center gap-3 rounded-2xl border border-white/12 bg-white/10 p-3 shadow-sm backdrop-blur">
-      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-cyan-300/15 text-cyan-100">
+    <li className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.07] p-3.5">
+      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-brand-sky/15 text-brand-cyan">
         <Icon className="h-5 w-5" aria-hidden="true" />
       </span>
-      <div>
-        <p className="text-xs font-bold text-cyan-100/80">{label}</p>
-        <p className="text-sm font-extrabold text-white sm:text-base">{value}</p>
+      <div className="min-w-0">
+        <p className="text-xs font-semibold text-slate-300">{label}</p>
+        <p className="break-words text-base font-bold text-white">{value}</p>
       </div>
-    </div>
+    </li>
   );
 }

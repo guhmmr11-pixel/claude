@@ -1,163 +1,184 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import type { KeyboardEvent, MouseEvent, PointerEvent } from "react";
 import { CheckCircle2, Mail, MessageCircle, X } from "lucide-react";
+import { SolutionVisual } from "@/components/sinal-digital/solution-visual";
 import type { Solution } from "@/data/solutions";
+import { mailtoLink, whatsappLink, whatsappMessages } from "@/data/site";
 
 type SolutionModalProps = {
   solution: Solution | null;
+  /** Elemento que abriu o modal. Recebe o foco de volta ao fechar. */
+  returnFocusTo: HTMLElement | null;
   onClose: () => void;
 };
 
-export function SolutionModal({ solution, onClose }: SolutionModalProps) {
-  const closeButtonRef = useRef<HTMLButtonElement>(null);
-  const dialogRef = useRef<HTMLDivElement>(null);
+const FOCUSABLE =
+  'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+/**
+ * Detalhes de uma família de soluções em um <dialog> nativo.
+ * O navegador cuida da camada modal (fundo inerte) e do Escape.
+ * O componente completa o ciclo de Tab, o clique fora e a devolução do foco.
+ */
+export function SolutionModal({ solution, returnFocusTo, onClose }: SolutionModalProps) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const pointerDownOnBackdrop = useRef(false);
 
   useEffect(() => {
-    if (!solution) {
-      return;
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    if (solution && !dialog.open) {
+      dialog.showModal();
+      dialog.querySelector<HTMLElement>("[data-autofocus]")?.focus();
+    } else if (!solution && dialog.open) {
+      dialog.close();
     }
+  }, [solution]);
 
-    const previousActiveElement = document.activeElement as HTMLElement | null;
-    closeButtonRef.current?.focus();
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
 
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        onClose();
-      }
-
-      if (event.key === "Tab") {
-        const focusableElements = dialogRef.current?.querySelectorAll<HTMLElement>(
-          'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
-        );
-
-        if (!focusableElements?.length) {
-          return;
-        }
-
-        const firstElement = focusableElements[0];
-        const lastElement = focusableElements[focusableElements.length - 1];
-
-        if (event.shiftKey && document.activeElement === firstElement) {
-          event.preventDefault();
-          lastElement.focus();
-        } else if (!event.shiftKey && document.activeElement === lastElement) {
-          event.preventDefault();
-          firstElement.focus();
-        }
-      }
+    const handleClose = () => {
+      // O evento "close" é assíncrono: se o modal já foi reaberto, ignora o evento antigo.
+      if (dialog.open) return;
+      onClose();
+      if (returnFocusTo?.isConnected) returnFocusTo.focus();
     };
 
-    document.body.style.overflow = "hidden";
-    window.addEventListener("keydown", handleKeyDown);
+    dialog.addEventListener("close", handleClose);
+    return () => dialog.removeEventListener("close", handleClose);
+  }, [onClose, returnFocusTo]);
 
-    return () => {
-      document.body.style.overflow = "";
-      window.removeEventListener("keydown", handleKeyDown);
-      previousActiveElement?.focus();
-    };
-  }, [solution, onClose]);
+  const close = () => dialogRef.current?.close();
 
-  if (!solution) {
-    return null;
-  }
+  const handleKeyDown = (event: KeyboardEvent<HTMLDialogElement>) => {
+    if (event.key !== "Tab") return;
 
-  const Icon = solution.icon;
-  const whatsappUrl = `https://wa.me/5511999015519?text=${encodeURIComponent(
-    `Olá, gostaria de saber mais sobre soluções de ${solution.name} da Sinal Digital.`
-  )}`;
-  const emailUrl = `mailto:decio@sinaldig.com.br?subject=${encodeURIComponent(
-    `Solução ${solution.name} - Sinal Digital`
-  )}&body=${encodeURIComponent(
-    `Olá, gostaria de saber mais sobre soluções de ${solution.name} da Sinal Digital.`
-  )}`;
+    const focusable = Array.from(
+      event.currentTarget.querySelectorAll<HTMLElement>(FOCUSABLE)
+    ).filter((element) => element.offsetParent !== null);
+
+    if (!focusable.length) return;
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  };
+
+  // Fecha só quando o clique começa e termina no fundo (evita fechar ao arrastar seleção de texto).
+  const handlePointerDown = (event: PointerEvent<HTMLDialogElement>) => {
+    pointerDownOnBackdrop.current = event.target === event.currentTarget;
+  };
+
+  const handleClick = (event: MouseEvent<HTMLDialogElement>) => {
+    if (pointerDownOnBackdrop.current && event.target === event.currentTarget) close();
+    pointerDownOnBackdrop.current = false;
+  };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/60 px-4 py-4 backdrop-blur-md sm:items-center sm:py-8"
-      role="dialog"
-      aria-modal="true"
+    <dialog
+      ref={dialogRef}
+      className="solution-dialog"
       aria-labelledby="solution-modal-title"
-      onMouseDown={(event) => {
-        if (event.target === event.currentTarget) {
-          onClose();
-        }
-      }}
+      onKeyDown={handleKeyDown}
+      onPointerDown={handlePointerDown}
+      onClick={handleClick}
     >
-      <div
-        ref={dialogRef}
-        className="max-h-[92vh] w-full max-w-3xl animate-[modal-in_180ms_ease-out] overflow-y-auto rounded-3xl border border-white/85 bg-white shadow-2xl shadow-slate-950/25"
-      >
-        <div className="flex items-start justify-between gap-4 border-b border-slate-200 bg-gradient-to-br from-sky-50 to-white p-5 sm:p-6">
-          <div className="flex gap-4">
-            <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-[#063A78] to-[#0B6ACB] text-white shadow-lg shadow-sky-950/20">
-              <Icon className="h-7 w-7" aria-hidden="true" />
-            </div>
+      {solution ? (
+        <div className="solution-dialog__panel flex max-h-[92vh] flex-col overflow-hidden rounded-t-3xl bg-white shadow-2xl shadow-brand-night/30 supports-[height:100dvh]:max-h-[92dvh] sm:max-h-[88vh] sm:rounded-3xl sm:supports-[height:100dvh]:max-h-[88dvh]">
+          <div className="flex items-start justify-between gap-4 border-b border-brand-line px-5 py-4 sm:px-6 sm:py-5">
             <div>
-              <p className="text-sm font-black tracking-[0.18em] text-sky-700">
-                {solution.number}
-              </p>
+              <p className="text-xs font-bold tracking-[0.18em] text-brand-blue">{solution.number}</p>
               <h2
                 id="solution-modal-title"
-                className="mt-1 text-2xl font-black leading-tight text-[#052D5F]"
+                className="mt-1 text-xl font-bold leading-snug text-brand-navy sm:text-2xl"
               >
                 {solution.name}
               </h2>
-              <p className="mt-2 text-sm font-semibold text-slate-600">
-                {solution.subheadline}
-              </p>
+              <p className="mt-1 text-sm font-semibold text-slate-600">{solution.subheadline}</p>
+            </div>
+            <button
+              type="button"
+              data-autofocus
+              onClick={close}
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-lg text-slate-500 transition-colors hover:bg-brand-mist hover:text-brand-navy focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-blue"
+              aria-label="Fechar detalhes da solução"
+            >
+              <X className="h-5 w-5" aria-hidden="true" />
+            </button>
+          </div>
+
+          <div
+            className="overflow-y-auto overscroll-contain focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand-blue"
+            tabIndex={0}
+            role="region"
+            aria-label={`Detalhes de ${solution.name}`}
+          >
+            {/* Em telas baixas, a faixa visual sai para priorizar texto e ações. */}
+            <div className="[@media(max-height:640px)]:hidden">
+              <SolutionVisual solution={solution} variant="modal" />
+            </div>
+            <div className="px-5 py-5 sm:px-6 sm:py-6">
+              <p className="text-base leading-7 text-slate-700">{solution.description}</p>
+              <h3 className="mt-6 text-sm font-bold uppercase tracking-[0.16em] text-brand-deep">
+                Itens incluídos
+              </h3>
+              <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+                {solution.includes.map((item) => (
+                  <li
+                    key={item}
+                    className="flex items-center gap-3 rounded-xl border border-brand-line bg-brand-surface/60 px-4 py-3 text-sm font-semibold text-slate-700"
+                  >
+                    <CheckCircle2 className="h-5 w-5 shrink-0 text-brand-blue" aria-hidden="true" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
-          <button
-            ref={closeButtonRef}
-            type="button"
-            onClick={onClose}
-            className="grid h-10 w-10 shrink-0 place-items-center rounded-md text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500"
-            aria-label="Fechar detalhes da solução"
-          >
-            <X className="h-5 w-5" aria-hidden="true" />
-          </button>
-        </div>
-        <div className="p-5 sm:p-6">
-          <p className="text-base leading-8 text-slate-700">{solution.description}</p>
-          <div className="mt-6 grid gap-3 sm:grid-cols-2">
-            {solution.includes.map((item) => (
-              <div
-                key={item}
-                className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-bold text-slate-700"
-              >
-                <CheckCircle2 className="h-5 w-5 shrink-0 text-cyan-600" aria-hidden="true" />
-                {item}
-              </div>
-            ))}
-          </div>
-          <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+
+          <div className="flex flex-col gap-2 border-t border-brand-line bg-white px-5 py-4 sm:flex-row sm:flex-wrap sm:px-6">
             <a
-              href={whatsappUrl}
+              href={whatsappLink(whatsappMessages.solution(solution.name))}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center justify-center gap-2 rounded-md bg-[#075E54] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#128C7E] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500"
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-whatsapp-dark px-5 text-sm font-semibold text-white transition-colors hover:bg-whatsapp-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-whatsapp-dark"
             >
               <MessageCircle className="h-4 w-4" aria-hidden="true" />
-              Consultar esta solução pelo WhatsApp
+              Consultar pelo WhatsApp
+              <span className="sr-only"> (abre em nova aba)</span>
             </a>
             <a
-              href={emailUrl}
-              className="inline-flex items-center justify-center gap-2 rounded-md border border-slate-300 bg-white px-5 py-3 text-sm font-bold text-[#063A78] transition hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500"
+              href={mailtoLink({
+                subject: `Solução ${solution.name} - Sinal Digital`,
+                body: whatsappMessages.solution(solution.name)
+              })}
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-brand-line px-5 text-sm font-semibold text-brand-deep transition-colors hover:bg-brand-mist focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-blue"
             >
               <Mail className="h-4 w-4" aria-hidden="true" />
               Consultar por e-mail
             </a>
             <button
               type="button"
-              onClick={onClose}
-              className="inline-flex justify-center rounded-md border border-slate-300 bg-white px-5 py-3 text-sm font-bold text-[#063A78] transition hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500"
+              onClick={close}
+              className="inline-flex h-11 items-center justify-center rounded-lg px-5 text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-100 hover:text-brand-navy focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-blue sm:ml-auto"
             >
               Voltar às soluções
             </button>
           </div>
         </div>
-      </div>
-    </div>
+      ) : null}
+    </dialog>
   );
 }

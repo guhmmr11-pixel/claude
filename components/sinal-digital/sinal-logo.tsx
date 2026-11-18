@@ -1,7 +1,15 @@
+import Image from "next/image";
+import { site } from "@/data/site";
+
 type SinalLogoProps = {
-  compact?: boolean;
+  /** `light`: fundo claro (header). `dark`: fundo marinho (rodapé). */
+  tone?: "light" | "dark";
+  showTagline?: boolean;
+  className?: string;
 };
 
+// Marca provisória desenhada a partir da referência enviada na conversa.
+// Quando `site.logo` for preenchido em data/site.ts, o arquivo oficial substitui este desenho.
 const pixels = [
   "col-start-4 row-start-1 bg-[#0B6ACB]",
   "col-start-5 row-start-1 bg-[#063A78]",
@@ -20,40 +28,50 @@ const pixels = [
   "col-start-6 row-start-6 bg-[#35BDF2]"
 ];
 
-export function SinalLogo({ compact = false }: SinalLogoProps) {
+export function SinalLogo({ tone = "light", showTagline = false, className = "" }: SinalLogoProps) {
+  const isDark = tone === "dark";
+
+  if (site.logo) {
+    return (
+      <span
+        className={`inline-flex items-center ${isDark ? "rounded-xl bg-white px-3 py-2" : ""} ${className}`}
+      >
+        <Image
+          src={site.logo.src}
+          alt={site.logo.alt}
+          width={site.logo.width}
+          height={site.logo.height}
+          className="h-10 w-auto"
+          priority={!isDark}
+        />
+      </span>
+    );
+  }
+
   return (
-    <div
-      className={`flex items-center gap-3 rounded-2xl border border-cyan-200/22 bg-white px-3 py-2 text-[#063A78] shadow-lg shadow-sky-950/16 ${
-        compact ? "max-w-[240px]" : "max-w-[290px]"
-      }`}
-      aria-label="Sinal Digital"
-    >
-      <div className="relative grid h-12 w-14 shrink-0 grid-cols-6 grid-rows-6 gap-0.5" aria-hidden="true">
-        {pixels.map((className, index) => (
-          <span key={index} className={`${className} rounded-[2px]`} />
+    <span className={`inline-flex items-center gap-2.5 ${className}`}>
+      <span className="grid h-9 w-10 shrink-0 grid-cols-6 grid-rows-6 gap-[2px]" aria-hidden="true">
+        {pixels.map((pixel, index) => (
+          <span key={index} className={`${pixel} rounded-[1.5px]`} />
         ))}
-      </div>
-      <div className="leading-none">
-        <span
-          className={`block font-black uppercase tracking-[0.08em] text-[#063A78] ${
-            compact ? "text-lg" : "text-xl sm:text-2xl"
-          }`}
-        >
-          SINAL
+      </span>
+      <span className="leading-none">
+        <span className="block text-[0.95rem] font-extrabold uppercase tracking-[0.14em]">
+          <span className={`block ${isDark ? "text-white" : "text-brand-ink"}`}>Sinal</span>
+          <span className={`mt-0.5 block ${isDark ? "text-brand-cyan" : "text-brand-blue"}`}>
+            Digital
+          </span>
         </span>
-        <span
-          className={`block font-black uppercase tracking-[0.08em] text-[#0B6ACB] ${
-            compact ? "text-lg" : "text-xl sm:text-2xl"
-          }`}
-        >
-          DIGITAL
-        </span>
-        {!compact ? (
-          <span className="mt-1 block text-[0.62rem] font-black uppercase tracking-[0.18em] text-[#063A78]">
-            O seu parceiro de negócios
+        {showTagline ? (
+          <span
+            className={`mt-1.5 block text-[0.62rem] font-semibold uppercase tracking-[0.2em] ${
+              isDark ? "text-slate-300" : "text-slate-500"
+            }`}
+          >
+            {site.tagline}
           </span>
         ) : null}
-      </div>
-    </div>
+      </span>
+    </span>
   );
 }

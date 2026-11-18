@@ -1,63 +1,64 @@
-"use client";
-
-import { CheckCircle2, MessageCircle } from "lucide-react";
+import { MessageCircle } from "lucide-react";
+import { SolutionVisual } from "@/components/sinal-digital/solution-visual";
 import type { Solution } from "@/data/solutions";
-import { SolutionIllustration } from "@/components/sinal-digital/solution-illustration";
+import { whatsappLink, whatsappMessages } from "@/data/site";
 
 type SolutionCardProps = {
   solution: Solution;
-  onOpen: (solution: Solution) => void;
+  onOpen: (solution: Solution, trigger: HTMLButtonElement) => void;
 };
 
 export function SolutionCard({ solution, onOpen }: SolutionCardProps) {
-  const Icon = solution.icon;
-  const whatsappUrl = `https://wa.me/5511999015519?text=${encodeURIComponent(
-    `Olá, gostaria de saber mais sobre soluções de ${solution.name} da Sinal Digital.`
-  )}`;
+  const titleId = `solucao-${solution.id}-titulo`;
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-xl shadow-sky-950/8 transition hover:-translate-y-1 hover:border-cyan-200 hover:shadow-2xl hover:shadow-sky-950/12">
-      <div className="p-4 pb-0">
-        <SolutionIllustration solutionId={solution.id} />
+    <article
+      id={`solucao-${solution.id}`}
+      aria-labelledby={titleId}
+      className="reveal group flex h-full flex-col overflow-hidden rounded-2xl border border-brand-line bg-white shadow-[0_1px_2px_rgba(3,27,58,0.06)] transition-shadow duration-300 hover:shadow-[0_18px_40px_-18px_rgba(3,27,58,0.28)]"
+    >
+      <div className="relative">
+        <SolutionVisual solution={solution} />
+        <span className="absolute left-4 top-4 rounded-md bg-white/95 px-2 py-1 text-xs font-bold tracking-[0.16em] text-brand-blue shadow-sm">
+          {solution.number}
+        </span>
       </div>
-      <div className="flex flex-1 flex-col p-5">
-        <div className="flex items-start justify-between gap-4">
-          <span className="text-sm font-black tracking-[0.18em] text-[#0B6ACB]">
-            {solution.number}
-          </span>
-          <span className="grid h-12 w-12 place-items-center rounded-2xl bg-sky-50 text-[#063A78] shadow-sm transition group-hover:bg-[#063A78] group-hover:text-white">
-            <Icon className="h-6 w-6" aria-hidden="true" />
-          </span>
-        </div>
-        <h3 className="mt-4 text-xl font-black leading-tight text-[#052D5F]">{solution.name}</h3>
-        <p className="mt-2 text-sm font-bold leading-5 text-[#0B6ACB]">{solution.subheadline}</p>
-        <p className="mt-4 text-sm leading-6 text-slate-600">{solution.shortDescription}</p>
 
-        <ul className="mt-4 grid gap-2">
-          {solution.includes.slice(0, 5).map((item) => (
-            <li key={item} className="flex items-center gap-2 text-sm font-semibold text-slate-700">
-              <CheckCircle2 className="h-4 w-4 shrink-0 text-cyan-600" aria-hidden="true" />
+      <div className="flex flex-1 flex-col p-6">
+        <h3 id={titleId} className="text-xl font-bold leading-snug text-brand-navy">
+          {solution.name}
+        </h3>
+        <p className="mt-1.5 text-sm font-semibold text-brand-blue">{solution.subheadline}</p>
+        <p className="mt-3 text-[0.95rem] leading-relaxed text-slate-600">{solution.shortDescription}</p>
+
+        <ul className="mt-5 grid gap-2 border-t border-brand-line pt-5">
+          {solution.includes.map((item) => (
+            <li key={item} className="flex items-start gap-2.5 text-sm text-slate-700">
+              <span className="mt-[0.45rem] h-1.5 w-1.5 shrink-0 rounded-full bg-brand-sky" aria-hidden="true" />
               {item}
             </li>
           ))}
         </ul>
 
-        <div className="mt-auto flex flex-col gap-2 pt-5 sm:flex-row">
+        <div className="mt-auto flex flex-wrap gap-2 pt-6">
           <a
-            href={whatsappUrl}
+            href={whatsappLink(whatsappMessages.solution(solution.name))}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-[#075E54] px-4 py-3 text-sm font-black text-white shadow-lg shadow-emerald-950/12 transition hover:bg-[#128C7E] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500"
+            className="inline-flex h-11 grow basis-[12.5rem] items-center whitespace-nowrap justify-center gap-2 rounded-lg bg-whatsapp-dark px-4 text-sm font-semibold text-white transition-colors hover:bg-whatsapp-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-whatsapp-dark"
           >
             <MessageCircle className="h-4 w-4" aria-hidden="true" />
             Consultar solução
+            <span className="sr-only"> de {solution.name} pelo WhatsApp (abre em nova aba)</span>
           </a>
           <button
             type="button"
-            onClick={() => onOpen(solution)}
-            className="inline-flex flex-1 items-center justify-center rounded-xl border border-[#0B6ACB]/20 bg-sky-50 px-4 py-3 text-sm font-black text-[#052D5F] transition hover:border-cyan-300 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500"
+            aria-haspopup="dialog"
+            onClick={(event) => onOpen(solution, event.currentTarget)}
+            className="inline-flex h-11 grow basis-28 items-center whitespace-nowrap justify-center rounded-lg border border-brand-line bg-white px-4 text-sm font-semibold text-brand-deep transition-colors hover:border-brand-blue/40 hover:bg-brand-mist focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-blue"
           >
             Saiba mais
+            <span className="sr-only"> sobre {solution.name}</span>
           </button>
         </div>
       </div>

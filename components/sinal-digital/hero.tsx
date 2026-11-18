@@ -1,132 +1,155 @@
+import Image from "next/image";
 import {
-  BadgeCheck,
-  CircuitBoard,
+  Check,
   Cpu,
-  Factory,
   Laptop,
+  MessageCircle,
   Monitor,
   Projector,
   Router,
   Smartphone,
   Tablet,
-  Wifi,
-  Workflow
+  Wifi
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { SinalLogo } from "@/components/sinal-digital/sinal-logo";
+import { site, whatsappLink, whatsappMessages } from "@/data/site";
+
+const trustItems = [
+  "Desde 2011",
+  "Fornecedor B2B",
+  "Faturamento direto pelo fabricante/distribuidor",
+  "Garantia do fabricante"
+];
 
 export function Hero() {
   return (
     <section
       id="inicio"
-      className="relative scroll-mt-28 overflow-hidden border-b border-cyan-300/20 bg-[radial-gradient(circle_at_76%_18%,rgba(14,165,233,0.28),transparent_30%),radial-gradient(circle_at_12%_16%,rgba(59,130,246,0.18),transparent_28%),linear-gradient(135deg,#020f24_0%,#031B3A_46%,#062C55_100%)]"
+      className="relative overflow-hidden bg-brand-navy text-white"
+      aria-labelledby="hero-title"
     >
-      <div className="absolute inset-0 opacity-55 [background-image:linear-gradient(rgba(125,211,252,0.12)_1px,transparent_1px),linear-gradient(90deg,rgba(125,211,252,0.12)_1px,transparent_1px)] [background-size:38px_38px]" aria-hidden="true" />
-      <div className="absolute -right-28 top-24 h-72 w-72 rounded-full bg-cyan-300/18 blur-3xl" aria-hidden="true" />
-      <div className="relative mx-auto grid max-w-7xl items-center gap-7 px-4 py-8 sm:px-6 sm:py-10 lg:grid-cols-[1fr_0.9fr] lg:px-8 lg:py-12">
-        <div className="max-w-3xl animate-[hero-in_700ms_ease-out_both]">
-          <div className="mb-4 w-fit">
-            <SinalLogo />
-          </div>
-          <div className="mb-4 flex flex-wrap gap-2">
-            <HeroBadge icon={BadgeCheck} label="Desde 2011" />
-            <HeroBadge icon={Factory} label="Fornecedor B2B" />
-            <HeroBadge icon={Workflow} label="Faturamento direto" />
-            <HeroBadge icon={BadgeCheck} label="Garantia do fabricante" />
-          </div>
-          <h1 className="max-w-4xl text-4xl font-black leading-[1.02] tracking-tight text-white drop-shadow-sm sm:text-5xl lg:text-[3.6rem]">
+      <div
+        className="absolute inset-0 bg-[radial-gradient(circle_at_82%_20%,rgba(53,189,242,0.22),transparent_38%),linear-gradient(135deg,#020F24_0%,#031B3A_50%,#052D5F_100%)]"
+        aria-hidden="true"
+      />
+      <div
+        className="absolute inset-0 opacity-40 [background-image:linear-gradient(rgba(125,211,252,0.09)_1px,transparent_1px),linear-gradient(90deg,rgba(125,211,252,0.09)_1px,transparent_1px)] [background-size:40px_40px]"
+        aria-hidden="true"
+      />
+
+      <div className="relative mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 px-4 py-14 sm:px-6 sm:py-16 lg:grid-cols-[1.12fr_0.88fr] lg:px-8 lg:py-20">
+        <div className="max-w-2xl">
+          <p className="text-xs font-bold uppercase tracking-[0.24em] text-brand-cyan">
+            Tecnologia B2B
+          </p>
+          <h1
+            id="hero-title"
+            className="mt-4 text-[1.85rem] font-extrabold leading-[1.12] tracking-tight sm:text-5xl sm:leading-[1.08] lg:text-[3.1rem]"
+          >
             Tecnologia, infraestrutura e conectividade para impulsionar a operação da sua empresa.
           </h1>
-          <p className="mt-4 max-w-2xl text-base leading-7 text-slate-200 sm:text-lg">
-            A Sinal Digital conecta empresas a soluções completas em tecnologia,
-            conectividade, equipamentos e serviços, com atendimento consultivo desde 2011.
+          <p className="mt-5 max-w-xl text-base leading-7 text-slate-200 sm:text-lg sm:leading-8">
+            A Sinal Digital conecta empresas a soluções completas em tecnologia, conectividade,
+            equipamentos e serviços, com atendimento consultivo desde {site.since}.
           </p>
-          <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <a
               href="#solucoes"
-              className="inline-flex items-center justify-center rounded-xl bg-cyan-500 px-5 py-3 text-sm font-black text-[#031B3A] shadow-lg shadow-cyan-950/25 transition hover:bg-cyan-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500"
+              className="inline-flex h-12 items-center justify-center rounded-lg bg-brand-sky px-6 text-sm font-bold text-brand-navy transition-colors hover:bg-brand-cyan focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-cyan"
             >
               Consultar soluções
             </a>
             <a
-              href="https://wa.me/5511999015519?text=Ol%C3%A1,%20gostaria%20de%20falar%20com%20um%20consultor%20da%20Sinal%20Digital"
+              href={whatsappLink(whatsappMessages.consultant)}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center justify-center rounded-xl border border-white/20 bg-white/10 px-5 py-3 text-sm font-black text-white backdrop-blur transition hover:border-cyan-200/50 hover:bg-white/16 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500"
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-white/30 px-6 text-sm font-bold text-white transition-colors hover:border-white/60 hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-cyan"
             >
+              <MessageCircle className="h-4 w-4" aria-hidden="true" />
               Falar com um consultor
+              <span className="sr-only"> pelo WhatsApp (abre em nova aba)</span>
             </a>
           </div>
+
+          <ul className="mt-9 grid grid-cols-1 gap-x-6 gap-y-2.5 border-t border-white/10 pt-6 text-sm text-slate-200 sm:grid-cols-2">
+            {trustItems.map((item) => (
+              <li key={item} className="flex items-start gap-2">
+                <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand-sky" aria-hidden="true" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
         </div>
 
-        <div className="animate-[hero-in_800ms_ease-out_120ms_both]">
-          <HeroVisual />
-        </div>
+        <div className="hidden lg:block">{site.heroImage ? <HeroPhoto /> : <EquipmentShowcase />}</div>
       </div>
     </section>
   );
 }
 
-function HeroVisual() {
+function HeroPhoto() {
+  const image = site.heroImage!;
+
   return (
-    <div className="relative mx-auto w-full max-w-lg animate-[float-soft_6s_ease-in-out_infinite]" aria-label="Equipamentos de tecnologia fornecidos pela Sinal Digital">
-      <div className="absolute inset-5 rounded-full bg-cyan-300/45 blur-3xl" aria-hidden="true" />
-      <div className="relative overflow-hidden rounded-[1.6rem] border border-cyan-200/25 bg-[#061F3F]/78 p-4 shadow-2xl shadow-sky-950/35 backdrop-blur-xl sm:p-5">
-        <div className="absolute right-6 top-6 inline-flex items-center gap-2 rounded-full bg-[#052D5F] px-3 py-2 text-xs font-black text-cyan-100 shadow-lg">
-          <CircuitBoard className="h-4 w-4" aria-hidden="true" />
-          Stack corporativo
-        </div>
-        <div className="grid grid-cols-[0.8fr_1.2fr_0.8fr] items-end gap-2.5 sm:gap-3">
-          <DeviceTile label="Tablet" className="h-24 sm:h-28" icon={Tablet} />
-          <div className="space-y-3">
-            <DeviceTile label="TV / Monitor" className="h-36 sm:h-40" icon={Monitor} prominent />
-            <DeviceTile label="Notebook" className="h-20" icon={Laptop} />
-          </div>
-          <DeviceTile label="Celular" className="h-28 sm:h-32" icon={Smartphone} />
-        </div>
-        <div className="mt-3 grid grid-cols-4 gap-2.5">
-          <DeviceTile label="Projetor" className="h-20" icon={Projector} compact />
-          <DeviceTile label="Desktop" className="h-20" icon={Cpu} compact />
-          <DeviceTile label="Switch" className="h-20" icon={Router} compact />
-          <DeviceTile label="Access point" className="h-20" icon={Wifi} compact />
-        </div>
-        <div className="mt-3 rounded-2xl border border-cyan-200/20 bg-gradient-to-r from-[#052D5F] to-[#0B6ACB] px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-sky-950/20">
-          Tecnologia, infraestrutura e serviços em um só parceiro.
-        </div>
+    <Image
+      src={image.src}
+      alt={image.alt}
+      width={image.width}
+      height={image.height}
+      priority
+      sizes="(min-width: 1024px) 40vw, 100vw"
+      className="aspect-[4/3] w-full rounded-3xl object-cover shadow-2xl shadow-black/30"
+    />
+  );
+}
+
+/** Vitrine por ícones, usada enquanto não houver foto autorizada em `site.heroImage`. */
+function EquipmentShowcase() {
+  return (
+    <figure className="rounded-3xl border border-white/10 bg-white/[0.06] p-4 shadow-2xl shadow-black/25">
+      <div className="grid grid-cols-4 gap-3">
+        <EquipmentTile icon={Monitor} label="TV / Monitor" className="col-span-2 row-span-2" large />
+        <EquipmentTile icon={Laptop} label="Notebook" className="col-span-2" />
+        <EquipmentTile icon={Tablet} label="Tablet" />
+        <EquipmentTile icon={Smartphone} label="Celular" />
+        <EquipmentTile icon={Projector} label="Projetor" />
+        <EquipmentTile icon={Cpu} label="Desktop" />
+        <EquipmentTile icon={Router} label="Switch" />
+        <EquipmentTile icon={Wifi} label="Access point" />
       </div>
-    </div>
+      <figcaption className="sr-only">
+        Exemplos de equipamentos fornecidos pela Sinal Digital: TV e monitor, notebook, tablet,
+        celular, projetor, desktop, switch e access point.
+      </figcaption>
+    </figure>
   );
 }
 
-function HeroBadge({ icon: Icon, label }: { icon: LucideIcon; label: string }) {
-  return (
-    <span className="inline-flex items-center gap-2 rounded-full border border-cyan-200/25 bg-white/10 px-3 py-1.5 text-xs font-extrabold text-cyan-100 shadow-sm shadow-sky-950/10 backdrop-blur">
-      <Icon className="h-4 w-4 text-cyan-200" aria-hidden="true" />
-      {label}
-    </span>
-  );
-}
-
-type DeviceTileProps = {
-  label: string;
-  className: string;
+function EquipmentTile({
+  icon: Icon,
+  label,
+  className = "",
+  large = false
+}: {
   icon: LucideIcon;
-  compact?: boolean;
-  prominent?: boolean;
-};
-
-function DeviceTile({ label, className, icon: Icon, compact, prominent }: DeviceTileProps) {
+  label: string;
+  className?: string;
+  large?: boolean;
+}) {
   return (
     <div
-      className={`${className} flex flex-col items-center justify-center rounded-2xl border border-cyan-100/15 bg-gradient-to-br from-white/95 to-cyan-50/86 p-2.5 text-center shadow-lg shadow-sky-950/18 transition hover:-translate-y-1 hover:shadow-xl`}
+      className={`flex min-h-[6.5rem] flex-col items-center justify-center gap-2 rounded-2xl bg-white p-3 text-center ${className}`}
+      aria-hidden="true"
     >
-      <Icon
-        className={`${prominent ? "h-16 w-16" : compact ? "h-7 w-7" : "h-10 w-10"} text-[#0B6ACB]`}
-        aria-hidden="true"
-      />
-      <span className={`${compact ? "mt-2 text-[0.68rem]" : "mt-3 text-xs"} font-bold text-slate-700`}>
-        {label}
+      <span
+        className={`grid place-items-center rounded-full bg-brand-mist text-brand-blue ${
+          large ? "h-24 w-24" : "h-11 w-11"
+        }`}
+      >
+        <Icon className={large ? "h-12 w-12" : "h-5 w-5"} strokeWidth={1.75} />
       </span>
+      <span className={`font-semibold text-slate-700 ${large ? "text-sm" : "text-xs"}`}>{label}</span>
     </div>
   );
 }
