@@ -28,3 +28,9 @@ next-build*.log
 # system files
 .DS_Store
 Thumbs.db
+
+# next.js generated types (Next.js 16: managed by next dev/build/typegen)
+next-env.d.ts
+
+# vercel
+.vercel
