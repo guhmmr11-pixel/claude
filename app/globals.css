@@ -5,8 +5,8 @@
 :root {
   color-scheme: light;
   --font-body: var(--font-inter), "Inter", "Segoe UI", Roboto, Arial, "Helvetica Neue", sans-serif;
-  /* Altura do header fixo, usada para compensar a navegação por âncoras. */
-  --header-offset: 4.75rem;
+  /* Altura do header fixo (64 px + 1 px de borda), usada para compensar a navegação por âncoras. */
+  --header-offset: 65px;
 }
 
 * {

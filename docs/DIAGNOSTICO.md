@@ -86,6 +86,7 @@ O mesmo build também foi validado no Node 22.23.5 durante o desenvolvimento.
 | Texto do botão "Consultar solução" quebrando a 768 px | Captura do card em 768 px. | `whitespace-nowrap` e base flex que empilha os botões quando não cabem. |
 | Link direto para `/#contato` animava ~8.000 px de rolagem | Amostragem de `scrollY`: o título só chegava ao lugar depois de mais de 1 s. | Rolagem suave só com foco na página (`html:focus-within`). Link direto pula na hora. |
 | Evento `close` atrasado do `<dialog>` podia fechar um modal recém-aberto | Falha intermitente ao reabrir rapidamente por teclado. | `handleClose` ignora o evento se o diálogo já estiver aberto de novo. |
+| Header semitransparente ficava acinzentado sobre o hero, e sobrava uma faixa de 11 px do hero ao navegar por âncora | Captura 1440 px de `#solucoes`. | Header branco sólido e `scroll-padding-top` igual à altura do header (65 px). |
 | Faixa visual do modal ocupava a tela em alturas baixas | Captura 1024×500. | Faixa oculta quando a altura da tela é ≤ 640 px. |
 | axe: `dl`/`dt` inválidos, botão flutuante fora de landmark, área rolável do modal sem acesso por teclado | Relatório do axe-core. | Lista `ul/li`, `<aside aria-label>` e região rolável com `tabIndex=0` e rótulo. |
 | `scroll-reveal.tsx` deixava seções em `opacity-0` até a hidratação e violava a regra `react-hooks/set-state-in-effect` | Lint do Next 16 e histórico de seções em branco. | Removido. A revelação agora é só CSS (`animation-timeline: view()`), com conteúdo visível por padrão. |
