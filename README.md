@@ -1,6 +1,6 @@
 # Sinal Digital | Site institucional
 
-Landing institucional B2B da Sinal Digital: portfólio em seis áreas de atuação, processo consultivo, diferenciais e contato comercial com mailing. Next.js 16 (App Router), React 19, TypeScript e Tailwind CSS 3.
+Site institucional B2B da Sinal Digital, com tema escuro e transições. Mostra o que a empresa fornece (equipamentos, áudio e vídeo, redes, climatização, segurança e serviços) com fotos clicáveis que abrem um pedido de cotação, além de benefícios, processo consultivo, contato comercial e mailing. Next.js 16 (App Router), React 19, TypeScript e Tailwind CSS 3.
 
 ## Rodar localmente
 
@@ -24,25 +24,35 @@ No Windows, use `npm.cmd ci` e `npm.cmd run dev` se o PowerShell bloquear `npm.p
 
 ## Estrutura da página
 
-Ordem em `app/page.tsx`: header, hero, soluções, benefícios, processo, diferenciais, contato com mailing, rodapé e WhatsApp flutuante. Âncoras do menu: `#inicio`, `#solucoes`, `#beneficios`, `#processo` e `#contato`. A seção de diferenciais também tem `#diferenciais`.
+Ordem em `app/page.tsx`: header fixo, hero com fotos de equipamentos (`#inicio`, `#equipamentos`), soluções (`#solucoes`), benefícios e diferenciais (`#beneficios`), como funciona (`#processo`), contato com mailing (`#contato`), rodapé e WhatsApp flutuante. O endereço `/#cotacao` abre direto o painel de cotação.
+
+### Cotação
+
+Todo botão "Solicitar cotação", "Cotar" ou foto de equipamento abre o mesmo painel lateral (`components/sinal-digital/quote/`). A família e os itens de origem já vêm marcados, e cliques seguidos somam itens ao pedido. O visitante informa quantidade, prazo, cidade e contato. O site monta a mensagem e abre o WhatsApp (`5511999015519`) ou o e-mail (`decio@sinaldig.com.br`), e o envio é confirmado pelo visitante. Não há backend nem preços. Sem JavaScript, os botões viram links de WhatsApp com mensagem de cotação.
+
+### Movimento
+
+As transições usam só CSS: entrada escalonada do topo, zoom lento na foto de fundo, anéis de "sinal", header que vira vidro ao rolar e revelação, parallax e linha de progresso guiados pela rolagem (`animation-timeline`). O conteúdo é visível sem JavaScript, e quem prefere movimento reduzido não vê animações. Os tokens ficam em `app/globals.css` e `tailwind.config.ts` (`space.*`, `signal.*`).
 
 ## Onde editar
 
 | O quê | Arquivo |
 | --- | --- |
-| Telefone, e-mail, responsável comercial, mensagens de WhatsApp, logotipo e foto do hero | `data/site.ts` |
-| Famílias de soluções (nome, subtítulo, resumo, itens, descrição completa, ícone e imagem) | `data/solutions.ts` |
+| Telefone, e-mail, responsável comercial, mensagens de WhatsApp e logotipo | `data/site.ts` |
+| Famílias de soluções (nome, subtítulo, resumo, itens, descrição completa, ícone e foto) | `data/solutions.ts` |
+| Equipamentos clicáveis do topo (foto, nome, família e itens marcados na cotação) | `data/equipment.ts` |
+| Painel de cotação (campos, validação, texto da mensagem) | `components/sinal-digital/quote/quote-drawer.tsx`, `quote-message.ts` |
 | Menu | `components/sinal-digital/nav-items.ts` |
-| Hero (H1, CTAs, selos, vitrine de equipamentos) | `components/sinal-digital/hero.tsx` |
+| Hero (H1, CTAs, selos, mosaico de equipamentos) | `components/sinal-digital/hero.tsx` |
 | Card, visual da família e modal de detalhes | `components/sinal-digital/solution-card.tsx`, `solution-visual.tsx`, `solution-modal.tsx` |
-| Benefícios, processo e diferenciais | `components/sinal-digital/benefits.tsx`, `validation-steps.tsx`, `why-sinal-digital.tsx` |
+| Benefícios e diferenciais, como funciona | `components/sinal-digital/benefits.tsx`, `validation-steps.tsx` |
 | Contato e mailing | `components/sinal-digital/contact.tsx`, `mailing-form.tsx` |
-| Cores da marca | `tailwind.config.ts` (`brand.*` e `whatsapp.*`) |
+| Cores e movimento | `tailwind.config.ts` (`space.*`, `signal.*`, `whatsapp.*`) e `app/globals.css` |
 | Título e descrição para buscadores | `app/layout.tsx` |
 
 ## Imagens e logotipo
 
-O site funciona sem imagens: cada família mostra o ícone em um círculo claro, e o hero mostra uma vitrine de equipamentos por ícones. Quando a empresa enviar fotos com uso autorizado ou o logotipo oficial, siga [docs/ASSETS.md](docs/ASSETS.md). Os arquivos ficam em `public/images/`.
+As fotos atuais são ilustrativas, do Unsplash (licença com uso comercial permitido), e ficam em `public/images/`. A lista com a origem de cada uma e o passo a passo para trocar por fotos próprias ou pelo logotipo oficial estão em [docs/ASSETS.md](docs/ASSETS.md).
 
 ## Mailing
 

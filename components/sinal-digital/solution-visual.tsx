@@ -3,14 +3,12 @@ import type { Solution } from "@/data/solutions";
 
 type SolutionVisualProps = {
   solution: Solution;
-  /** `card`: topo do card. `modal`: faixa no modal de detalhes. */
+  /** `card`: topo do card (com parallax ao rolar). `modal`: faixa no modal de detalhes. */
   variant?: "card" | "modal";
 };
 
 /**
- * Visual da família de soluções.
- * Com `solution.image` preenchido, mostra a foto/ilustração autorizada.
- * Sem imagem, mostra o ícone da família em um círculo claro (fallback padrão).
+ * Foto da família de soluções. Sem `solution.image`, mostra o ícone da família (fallback).
  */
 export function SolutionVisual({ solution, variant = "card" }: SolutionVisualProps) {
   const Icon = solution.icon;
@@ -18,33 +16,32 @@ export function SolutionVisual({ solution, variant = "card" }: SolutionVisualPro
 
   if (solution.image) {
     return (
-      <div className="relative aspect-[16/9] w-full overflow-hidden bg-brand-mist">
-        <Image
-          src={solution.image.src}
-          alt={solution.image.alt}
-          fill
-          sizes={isModal ? "(min-width: 640px) 48rem, 100vw" : "(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"}
-          className="object-cover"
-        />
+      <div className={`relative w-full overflow-hidden bg-space-800 ${isModal ? "aspect-[21/9]" : "aspect-[16/10]"}`}>
+        <div className={`absolute inset-0 ${isModal ? "" : "parallax-media"}`}>
+          <Image
+            src={solution.image.src}
+            alt={solution.image.alt}
+            fill
+            placeholder="blur"
+            sizes={isModal ? "(min-width: 640px) 52rem, 100vw" : "(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"}
+            className={`object-cover ${isModal ? "" : "transition duration-700 ease-out group-hover:scale-105"}`}
+            style={{ objectPosition: solution.image.position }}
+          />
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-t from-space-850 via-space-850/55 to-transparent" aria-hidden="true" />
       </div>
     );
   }
 
   return (
     <div
-      className={`relative grid w-full place-items-center overflow-hidden bg-gradient-to-br from-brand-mist via-white to-[#DCEEFA] ${
-        isModal ? "h-36 sm:h-44" : "aspect-[16/9]"
+      className={`relative grid w-full place-items-center overflow-hidden bg-gradient-to-br from-space-800 to-space-700 ${
+        isModal ? "aspect-[21/9]" : "aspect-[16/10]"
       }`}
       aria-hidden="true"
     >
-      <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full border border-brand-blue/10" />
-      <div className="absolute -bottom-14 -left-8 h-44 w-44 rounded-full border border-brand-blue/10" />
-      <span
-        className={`relative grid place-items-center rounded-full bg-white text-brand-blue shadow-[0_12px_30px_-12px_rgba(6,58,120,0.35)] ring-1 ring-brand-blue/10 ${
-          isModal ? "h-20 w-20 sm:h-24 sm:w-24" : "h-24 w-24"
-        }`}
-      >
-        <Icon className={isModal ? "h-9 w-9 sm:h-11 sm:w-11" : "h-11 w-11"} strokeWidth={1.6} />
+      <span className="grid h-24 w-24 place-items-center rounded-full border border-signal-sky/30 bg-signal-sky/10 text-signal-cyan">
+        <Icon className="h-11 w-11" strokeWidth={1.5} />
       </span>
     </div>
   );

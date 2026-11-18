@@ -11,9 +11,17 @@ const inter = localFont({
   display: "swap"
 });
 
+// Space Grotesk variável (licença OFL) para títulos.
+const display = localFont({
+  src: "../node_modules/@fontsource-variable/space-grotesk/files/space-grotesk-latin-wght-normal.woff2",
+  variable: "--font-display",
+  weight: "300 700",
+  display: "swap"
+});
+
 const title = "Sinal Digital | Tecnologia, infraestrutura e conectividade para empresas";
 const description =
-  "Equipamentos, infraestrutura, conectividade e serviços para empresas, instituições e projetos corporativos, com atendimento consultivo desde 2011.";
+  "A Sinal Digital fornece equipamentos e serviços de tecnologia para empresas: computadores, áudio e vídeo, redes, climatização e segurança, com faturamento direto pelo fabricante ou distribuidor e atendimento consultivo desde 2011.";
 
 function resolveSiteUrl() {
   if (process.env.NEXT_PUBLIC_SITE_URL) return process.env.NEXT_PUBLIC_SITE_URL;
@@ -39,7 +47,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#031B3A"
+  themeColor: "#020611"
 };
 
 export default function RootLayout({
@@ -48,7 +56,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className={inter.variable}>
+    <html lang="pt-BR" className={`${inter.variable} ${display.variable}`}>
       <body>{children}</body>
     </html>
   );

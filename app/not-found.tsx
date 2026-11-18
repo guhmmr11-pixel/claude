@@ -8,18 +8,18 @@ export const metadata: Metadata = {
 
 export default function NotFound() {
   return (
-    <main className="grid min-h-screen place-items-center bg-brand-surface px-4 py-16 text-center">
+    <main className="sd-site grid min-h-screen place-items-center bg-space-950 px-4 py-16 text-center text-slate-100">
       <div className="max-w-md">
-        <p className="text-xs font-bold uppercase tracking-[0.22em] text-brand-blue">Erro 404</p>
-        <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-brand-navy">
+        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-signal-cyan">Erro 404</p>
+        <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight text-white">
           Página não encontrada
         </h1>
-        <p className="mt-4 text-base leading-7 text-slate-600">
+        <p className="mt-4 text-base leading-7 text-slate-400">
           O endereço acessado não existe ou não faz parte do site da Sinal Digital.
         </p>
         <Link
           href="/"
-          className="mt-8 inline-flex h-12 items-center justify-center rounded-lg bg-brand-ink px-6 text-sm font-bold text-white transition-colors hover:bg-brand-blue focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-blue"
+          className="mt-8 inline-flex h-12 items-center justify-center rounded-full bg-gradient-to-r from-signal-cyan to-signal-sky px-6 text-sm font-semibold text-space-950 transition hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal-ice"
         >
           Voltar ao início
         </Link>

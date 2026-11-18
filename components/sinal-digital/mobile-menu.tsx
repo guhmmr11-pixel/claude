@@ -6,7 +6,7 @@ import { navItems } from "@/components/sinal-digital/nav-items";
 import { mailtoLink, whatsappLink } from "@/data/site";
 
 const focusRing =
-  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-blue";
+  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal-sky";
 
 /**
  * Menu para celular e tablet. Usa <details>/<summary>, então abre e fecha mesmo
@@ -58,30 +58,30 @@ export function MobileMenu() {
   return (
     <details ref={detailsRef} className="group lg:hidden">
       <summary
-        className={`grid h-10 w-10 cursor-pointer list-none place-items-center rounded-lg border border-brand-line text-brand-deep transition-colors hover:bg-brand-mist [&::-webkit-details-marker]:hidden ${focusRing}`}
+        className={`grid h-10 w-10 cursor-pointer list-none place-items-center rounded-full border border-white/15 text-slate-100 transition-colors hover:border-signal-sky/60 [&::-webkit-details-marker]:hidden ${focusRing}`}
         aria-label="Menu de navegação"
       >
         <Menu className="h-5 w-5 group-open:hidden" aria-hidden="true" />
         <X className="hidden h-5 w-5 group-open:block" aria-hidden="true" />
       </summary>
 
-      <div className="absolute inset-x-0 top-full border-b border-brand-line bg-white shadow-xl shadow-brand-navy/10">
+      <div className="absolute inset-x-0 top-full border-b border-white/10 bg-space-950/95 shadow-2xl shadow-black/50 backdrop-blur-xl">
         <nav className="mx-auto grid max-w-7xl gap-1 px-4 py-3 sm:px-6" aria-label="Menu principal">
           {navItems.map((item) => (
             <a
               key={item.href}
               href={item.href}
               onClick={closeMenu}
-              className={`rounded-lg px-3 py-3 text-base font-semibold text-slate-800 transition-colors hover:bg-brand-mist hover:text-brand-deep ${focusRing}`}
+              className={`rounded-lg px-3 py-3 text-base font-medium text-slate-200 transition-colors hover:bg-white/5 hover:text-white ${focusRing}`}
             >
               {item.label}
             </a>
           ))}
-          <div className="mt-2 grid grid-cols-2 gap-2 border-t border-brand-line pt-3">
+          <div className="mt-2 grid grid-cols-2 gap-2 border-t border-white/10 pt-3">
             <a
               href={mailtoLink()}
               onClick={closeMenu}
-              className={`inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-brand-line text-sm font-semibold text-brand-deep hover:bg-brand-mist ${focusRing}`}
+              className={`inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-white/15 text-sm font-semibold text-white hover:bg-white/5 ${focusRing}`}
             >
               <Mail className="h-4 w-4" aria-hidden="true" />
               E-mail
@@ -91,7 +91,7 @@ export function MobileMenu() {
               target="_blank"
               rel="noreferrer"
               onClick={closeMenu}
-              className={`inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-whatsapp-dark text-sm font-semibold text-white hover:bg-whatsapp-hover ${focusRing}`}
+              className={`inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-whatsapp text-sm font-semibold text-whatsapp-ink hover:bg-[#3BE07A] ${focusRing}`}
             >
               <MessageCircle className="h-4 w-4" aria-hidden="true" />
               WhatsApp

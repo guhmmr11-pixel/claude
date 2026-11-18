@@ -133,7 +133,7 @@ export function MailingForm() {
 
   return (
     <form ref={formRef} onSubmit={handleSubmit} noValidate className="grid grid-cols-1 gap-4">
-      <p className="text-xs text-slate-500">Campos com * são obrigatórios.</p>
+      <p className="text-xs text-slate-400">Campos com * são obrigatórios.</p>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Field id={`${formId}-name`} label="Nome" error={errors.name} required>
           <input
@@ -205,7 +205,7 @@ export function MailingForm() {
         />
       </Field>
 
-      <p className="flex gap-2 rounded-xl bg-brand-mist px-4 py-3 text-sm leading-6 text-brand-deep">
+      <p className="flex gap-2 rounded-xl border border-signal-sky/20 bg-signal-sky/10 px-4 py-3 text-sm leading-6 text-slate-200">
         <Info className="mt-1 h-4 w-4 shrink-0" aria-hidden="true" />
         <span>
           O botão abre seu aplicativo de e-mail com uma mensagem pronta para {site.contact.email}. O
@@ -215,7 +215,7 @@ export function MailingForm() {
 
       <button
         type="submit"
-        className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-brand-ink px-6 text-sm font-bold text-white transition-colors hover:bg-brand-blue focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-blue"
+        className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-signal-cyan to-signal-sky px-6 text-sm font-semibold text-space-950 transition hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal-ice"
       >
         <Send className="h-4 w-4" aria-hidden="true" />
         Entrar no mailing
@@ -223,8 +223,8 @@ export function MailingForm() {
 
       <div role="status" aria-live="polite">
         {draftOpened ? (
-          <div className="rounded-xl border border-brand-blue/25 bg-white p-4 text-sm leading-6 text-slate-700">
-            <p className="font-semibold text-brand-navy">Falta um passo: enviar o e-mail.</p>
+          <div className="rounded-xl border border-signal-sky/30 bg-signal-sky/10 p-4 text-sm leading-6 text-slate-200">
+            <p className="font-semibold text-white">Falta um passo: enviar o e-mail.</p>
             <p className="mt-1">
               Abrimos uma mensagem com seus dados no aplicativo de e-mail. Revise e clique em enviar.
               Se nenhum aplicativo abriu, copie a mensagem e envie para {site.contact.email}.
@@ -232,7 +232,7 @@ export function MailingForm() {
             <button
               type="button"
               onClick={copyMessage}
-              className="mt-3 inline-flex h-10 items-center gap-2 rounded-lg border border-brand-line px-4 font-semibold text-brand-deep transition-colors hover:bg-brand-mist focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-blue"
+              className="mt-3 inline-flex h-10 items-center gap-2 rounded-lg border border-white/15 px-4 font-semibold text-white transition-colors hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal-sky"
             >
               <Copy className="h-4 w-4" aria-hidden="true" />
               {copied ? "Mensagem copiada" : "Copiar mensagem"}
@@ -241,7 +241,7 @@ export function MailingForm() {
         ) : null}
       </div>
 
-      <p className="text-xs leading-5 text-slate-500">
+      <p className="text-xs leading-5 text-slate-400">
         Você receberá contatos comerciais e informações sobre soluções da Sinal Digital. Seus dados
         serão usados apenas para atendimento e relacionamento comercial.
       </p>
@@ -266,19 +266,19 @@ function Field({
 }) {
   return (
     <div className="grid min-w-0 grid-cols-1 gap-1.5">
-      <label htmlFor={id} className="text-sm font-semibold text-slate-800">
+      <label htmlFor={id} className="text-sm font-semibold text-slate-200">
         {label}
         {required ? (
-          <span className="text-brand-blue" aria-hidden="true">
+          <span className="text-signal-cyan" aria-hidden="true">
             {" "}
             *
           </span>
         ) : null}
       </label>
       {children}
-      {hint && !error ? <p className="text-xs text-slate-500">{hint}</p> : null}
+      {hint && !error ? <p className="text-xs text-slate-400">{hint}</p> : null}
       {error ? (
-        <p id={`${id}-error`} className="text-sm font-medium text-red-700">
+        <p id={`${id}-error`} className="text-sm font-medium text-red-300">
           {error}
         </p>
       ) : null}

@@ -81,9 +81,9 @@ npx vercel@latest deploy --prod
    node qa/landing.cjs https://<dominio>/
    ```
 
-   Esperado: `94 verificações ok, 0 falhas`.
+   Esperado: `125 verificações ok, 0 falhas`.
 
-5. Confira manualmente no celular: menu, âncoras, um "Saiba mais", um "Consultar solução" (abre o WhatsApp com a família no texto) e o mailing (abre o e-mail com os dados; não precisa enviar).
+5. Confira manualmente no celular: menu, âncoras, uma foto de equipamento (abre a cotação com o item marcado), o envio da cotação pelo WhatsApp (abre a conversa com a mensagem; não precisa enviar), um "Saiba mais" e o mailing.
 6. Registre a URL verificada, a data, o commit publicado e o resultado do roteiro.
 
 ## Diagnóstico de falhas

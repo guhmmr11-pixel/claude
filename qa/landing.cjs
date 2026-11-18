@@ -14,6 +14,7 @@ const SHOTS = process.argv[3] || fs.mkdtempSync(path.join(os.tmpdir(), 'sinal-qa
 const WA = '5511999015519';
 const EMAIL = 'decio@sinaldig.com.br';
 const SECTIONS = ['inicio', 'solucoes', 'beneficios', 'processo', 'contato'];
+const NAV_TARGETS = ['solucoes', 'equipamentos', 'beneficios', 'processo', 'contato'];
 const FAMILIES = [
   'Áudio e Vídeo',
   'Computação / Imagem',
@@ -67,7 +68,7 @@ async function waitScrollEnd(page) {
 
 async function focusInsideDialog(page) {
   return page.evaluate(() => {
-    const d = document.querySelector('dialog.solution-dialog');
+    const d = document.querySelector('dialog.sd-dialog');
     return d.open && d.contains(document.activeElement);
   });
 }
@@ -101,7 +102,7 @@ async function focusInsideDialog(page) {
     });
 
     const desktop = width >= 1024;
-    for (const id of SECTIONS) {
+    for (const id of NAV_TARGETS) {
       await check(`âncora #${id} pelo menu deixa o título visível sob o header`, async () => {
         await page.evaluate(() => window.scrollTo(0, 0));
         if (!desktop) {
@@ -117,6 +118,14 @@ async function focusInsideDialog(page) {
         assert.ok(r.ok, JSON.stringify(r));
       });
     }
+
+    await check('logo leva ao #inicio com o H1 visível', async () => {
+      await page.evaluate(() => window.scrollTo(0, 3000));
+      await page.locator('header a[href="#inicio"]').click();
+      await waitScrollEnd(page);
+      const r = await headingVisibleBelowHeader(page, 'inicio');
+      assert.ok(r.ok, JSON.stringify(r));
+    });
 
     if (!desktop) {
       await check('menu fecha com Escape e devolve o foco ao botão', async () => {
@@ -157,8 +166,12 @@ async function focusInsideDialog(page) {
         await waitScrollEnd(page);
         const r = await headingVisibleBelowHeader(page, id);
         assert.ok(r.ok, JSON.stringify(r));
-        const opacity = await page.evaluate((sid) => getComputedStyle(document.getElementById(sid).querySelector('h1, h2')).opacity, id);
-        assert.strictEqual(opacity, '1');
+        // A entrada animada do hero dura menos de 1 s; o título precisa terminar totalmente visível.
+        await page.waitForFunction(
+          (sid) => getComputedStyle(document.getElementById(sid).querySelector('h1, h2')).opacity === '1',
+          id,
+          { timeout: 2000 }
+        );
       });
     }
     await ctx.close();
@@ -177,17 +190,17 @@ async function focusInsideDialog(page) {
         const trigger = page.locator('#solucoes article').nth(index).getByRole('button', { name: /Saiba mais/ });
         await trigger.focus();
         await page.keyboard.press('Enter');
-        await page.waitForSelector('dialog.solution-dialog[open]');
+        await page.waitForSelector('dialog.sd-dialog[open]');
         const title = await page.locator('#solution-modal-title').textContent();
         assert.strictEqual(title, family);
         const focused = await page.evaluate(() => document.activeElement.getAttribute('aria-label'));
         assert.strictEqual(focused, 'Fechar detalhes da solução');
-        const wa = await page.locator('dialog a[href*="wa.me"]').getAttribute('href');
+        const wa = await page.locator('dialog.sd-dialog a[href*="wa.me"]').getAttribute('href');
         assert.ok(decodeURIComponent(wa).includes(family), 'WhatsApp do modal sem a família');
-        const mail = await page.locator('dialog a[href^="mailto:"]').getAttribute('href');
+        const mail = await page.locator('dialog.sd-dialog a[href^="mailto:"]').getAttribute('href');
         assert.ok(mail.startsWith(`mailto:${EMAIL}?`) && decodeURIComponent(mail).includes(family));
         await page.keyboard.press('Escape');
-        await page.waitForSelector('dialog.solution-dialog:not([open])', { state: 'attached' });
+        await page.waitForSelector('dialog.sd-dialog:not([open])', { state: 'attached' });
         const back = await page.evaluate(() => document.activeElement.textContent.trim());
         assert.ok(back.startsWith('Saiba mais'), `foco voltou para "${back}"`);
         assert.ok(back.includes(family));
@@ -196,8 +209,8 @@ async function focusInsideDialog(page) {
 
     await check('Tab e Shift+Tab ficam presos no modal (ciclo completo)', async () => {
       await page.locator('#solucoes article').first().getByRole('button', { name: /Saiba mais/ }).click();
-      await page.waitForSelector('dialog.solution-dialog[open]');
-      const count = await page.evaluate(() => [...document.querySelectorAll('dialog.solution-dialog a[href], dialog.solution-dialog button')].length);
+      await page.waitForSelector('dialog.sd-dialog[open]');
+      const count = await page.evaluate(() => [...document.querySelectorAll('dialog.sd-dialog a[href], dialog.sd-dialog button')].length);
       for (let i = 0; i < count + 2; i++) {
         await page.keyboard.press('Tab');
         assert.ok(await focusInsideDialog(page), `foco saiu do modal no Tab ${i + 1}`);
@@ -217,11 +230,11 @@ async function focusInsideDialog(page) {
     });
 
     await check('clique dentro do painel não fecha; clique fora fecha', async () => {
-      await page.locator('dialog .solution-dialog__panel p').first().click();
-      assert.ok(await page.evaluate(() => document.querySelector('dialog.solution-dialog').open));
+      await page.locator('dialog.sd-dialog .sd-dialog__panel p').first().click();
+      assert.ok(await page.evaluate(() => document.querySelector('dialog.sd-dialog').open));
       await page.mouse.click(20, 450);
       await page.waitForTimeout(100);
-      assert.strictEqual(await page.evaluate(() => document.querySelector('dialog.solution-dialog').open), false);
+      assert.strictEqual(await page.evaluate(() => document.querySelector('dialog.sd-dialog').open), false);
       const back = await page.evaluate(() => document.activeElement.textContent.trim());
       assert.ok(back.startsWith('Saiba mais'));
     });
@@ -229,7 +242,7 @@ async function focusInsideDialog(page) {
     await check('"Voltar às soluções" fecha e devolve o foco', async () => {
       await page.locator('#solucoes article').nth(2).getByRole('button', { name: /Saiba mais/ }).click();
       await page.getByRole('button', { name: 'Voltar às soluções' }).click();
-      assert.strictEqual(await page.evaluate(() => document.querySelector('dialog.solution-dialog').open), false);
+      assert.strictEqual(await page.evaluate(() => document.querySelector('dialog.sd-dialog').open), false);
       assert.ok((await page.evaluate(() => document.activeElement.textContent)).includes(FAMILIES[2]));
     });
 
@@ -238,7 +251,7 @@ async function focusInsideDialog(page) {
       for (const vp of [{ width: 375, height: 740 }, { width: 1024, height: 500 }]) {
         await page.setViewportSize(vp);
         await page.waitForTimeout(250);
-        const box = await page.locator('dialog .solution-dialog__panel').boundingBox();
+        const box = await page.locator('dialog .sd-dialog__panel').boundingBox();
         assert.ok(box.y >= -1 && box.y + box.height <= vp.height + 1, `painel fora da tela em ${vp.width}x${vp.height}: ${JSON.stringify(box)}`);
         assert.ok(box.x >= -1 && box.x + box.width <= vp.width + 1);
         for (const name of ['Fechar detalhes da solução', 'Voltar às soluções']) {
@@ -248,7 +261,7 @@ async function focusInsideDialog(page) {
         await page.screenshot({ path: `${SHOTS}/modal-${vp.width}x${vp.height}.png` });
       }
       const scrolls = await page.evaluate(() => {
-        const body = document.querySelector('dialog .overflow-y-auto');
+        const body = document.querySelector('dialog.sd-dialog .overflow-y-auto');
         return body.scrollHeight > body.clientHeight;
       });
       assert.ok(scrolls, 'em 1024x500 o conteúdo do modal deveria rolar internamente');
@@ -256,6 +269,164 @@ async function focusInsideDialog(page) {
     });
     await ctx.close();
   }
+
+  // ---------- 3b. Cotação ----------
+  console.log('\n[cotação]');
+  for (const vp of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
+    const ctx = await browser.newContext({ viewport: vp, permissions: ['clipboard-read', 'clipboard-write'] });
+    const page = await ctx.newPage();
+    watchErrors(page, errors);
+    const waOpened = [];
+    await ctx.route('https://wa.me/**', (route) => {
+      waOpened.push(route.request().url());
+      route.fulfill({ status: 200, contentType: 'text/html', body: '<title>wa</title>' });
+    });
+    await page.goto(BASE, { waitUntil: 'networkidle' });
+    const client = await ctx.newCDPSession(page);
+    await client.send('Page.enable');
+    const navs = [];
+    client.on('Page.frameRequestedNavigation', (e) => navs.push(e.url));
+    const drawer = page.locator('dialog.sd-drawer');
+    const pressed = (name) => drawer.getByRole('button', { name, exact: true }).getAttribute('aria-pressed');
+    const tag = `${vp.width}px`;
+
+    await check(`${tag} foto "Projetores" abre a cotação com Áudio e Vídeo e o item marcados`, async () => {
+      await page.getByRole('link', { name: 'Solicitar cotação de Projetores' }).click();
+      await page.waitForSelector('dialog.sd-drawer[open]');
+      assert.strictEqual(await page.evaluate(() => document.activeElement.getAttribute('aria-label')), 'Fechar cotação');
+      assert.strictEqual(await pressed('Áudio e Vídeo'), 'true');
+      assert.strictEqual(await pressed('Projetores multimídia'), 'true');
+      assert.strictEqual(await page.evaluate(() => getComputedStyle(document.documentElement).overflow), 'hidden');
+      await page.waitForTimeout(450); // fim da animação de entrada
+      const box = await drawer.locator('.sd-drawer__panel').boundingBox();
+      assert.ok(box.x >= -1 && box.x + box.width <= vp.width + 1 && box.y + box.height <= vp.height + 1, JSON.stringify(box));
+      const send = await drawer.getByRole('button', { name: 'Enviar pelo WhatsApp' }).boundingBox();
+      assert.ok(send.height >= 44 && send.y + send.height <= vp.height, `botão de envio ${JSON.stringify(send)}`);
+    });
+    await check(`${tag} Escape fecha e devolve o foco à foto`, async () => {
+      await page.keyboard.press('Escape');
+      await page.waitForSelector('dialog.sd-drawer:not([open])', { state: 'attached' });
+      const label = await page.evaluate(() => document.activeElement.getAttribute('aria-label'));
+      assert.strictEqual(label, 'Solicitar cotação de Projetores');
+    });
+    await check(`${tag} segunda foto soma a seleção (Wi-Fi → Infraestrutura)`, async () => {
+      await page.getByRole('link', { name: 'Solicitar cotação de Wi-Fi e roteadores' }).click();
+      await page.waitForSelector('dialog.sd-drawer[open]');
+      assert.strictEqual(await pressed('Áudio e Vídeo'), 'true');
+      assert.strictEqual(await pressed('Infraestrutura / Conectividade / Telecom'), 'true');
+      assert.strictEqual(await pressed('Access points'), 'true');
+    });
+    await check(`${tag} Tab e Shift+Tab ficam no painel`, async () => {
+      await drawer.getByRole('button', { name: 'Fechar cotação' }).focus();
+      await page.keyboard.press('Shift+Tab');
+      const inside = await page.evaluate(() => document.querySelector('dialog.sd-drawer').contains(document.activeElement));
+      assert.ok(inside);
+      await page.keyboard.press('Tab');
+      assert.strictEqual(await page.evaluate(() => document.activeElement.getAttribute('aria-label')), 'Fechar cotação');
+    });
+    await check(`${tag} envio sem dados mostra erros e foca o nome`, async () => {
+      await drawer.getByRole('button', { name: 'Enviar pelo WhatsApp' }).click();
+      assert.strictEqual(waOpened.length, 0);
+      const text = await drawer.textContent();
+      assert.ok(text.includes('Informe seu nome.') && text.includes('Informe o nome da empresa.') && text.includes('Informe seu WhatsApp com DDD.'));
+      assert.strictEqual(await page.evaluate(() => document.activeElement.dataset.field), 'name');
+    });
+    await check(`${tag} sem nenhuma solução marcada o envio é bloqueado`, async () => {
+      await drawer.getByRole('button', { name: 'Áudio e Vídeo', exact: true }).click();
+      await drawer.getByRole('button', { name: 'Infraestrutura / Conectividade / Telecom', exact: true }).click();
+      await drawer.getByRole('button', { name: 'Enviar pelo WhatsApp' }).click();
+      assert.ok((await drawer.textContent()).includes('Selecione pelo menos uma solução.'));
+      assert.strictEqual(await page.evaluate(() => document.activeElement.dataset.field), 'solutions');
+      await drawer.getByRole('button', { name: 'Áudio e Vídeo', exact: true }).click();
+      await drawer.getByRole('button', { name: 'Projetores multimídia' }).click();
+      await drawer.getByRole('button', { name: 'Videoconferência' }).click();
+      await drawer.getByRole('button', { name: 'Ar Condicionado', exact: true }).click();
+    });
+    await check(`${tag} dados válidos abrem o WhatsApp com a cotação completa`, async () => {
+      await drawer.getByLabel('Quantidade aproximada').fill('3 salas de reunião');
+      await drawer.getByText('Até 30 dias', { exact: true }).click();
+      await drawer.getByLabel('Cidade/UF de entrega').fill('Campinas/SP');
+      await drawer.getByLabel(/^Nome/).fill('Joana Conceição');
+      await drawer.getByLabel(/^Empresa/).fill('Ação & Cia Ltda.');
+      await drawer.getByLabel(/^WhatsApp/).fill('(11) 98888-7777');
+      await drawer.getByLabel('Observações').fill('Instalação em março.\nPreferência por equipamentos silenciosos.');
+      await drawer.getByRole('button', { name: 'Enviar pelo WhatsApp' }).click();
+      await page.waitForTimeout(600);
+      assert.strictEqual(waOpened.length, 1, `aberturas: ${waOpened.length}`);
+      const url = waOpened[0];
+      assert.ok(url.startsWith(`https://wa.me/${WA}?text=`), url);
+      const text = decodeURIComponent(url.split('?text=')[1]);
+      for (const piece of [
+        '• Áudio e Vídeo: Projetores multimídia, Videoconferência',
+        '• Ar Condicionado',
+        'Quantidade aproximada: 3 salas de reunião',
+        'Prazo: Até 30 dias',
+        'Cidade/UF de entrega: Campinas/SP',
+        'Nome: Joana Conceição',
+        'Empresa: Ação & Cia Ltda.',
+        'WhatsApp: (11) 98888-7777',
+        'Observações: Instalação em março.\nPreferência por equipamentos silenciosos.'
+      ]) assert.ok(text.includes(piece), `mensagem sem "${piece}"`);
+      assert.ok(!text.includes('Infraestrutura'), 'família desmarcada apareceu na mensagem');
+      assert.ok((await drawer.locator('[role="status"]').textContent()).includes('Falta um passo'));
+      for (const p of ctx.pages()) if (p !== page) await p.close();
+    });
+    await check(`${tag} envio por e-mail gera mailto com assunto e corpo`, async () => {
+      await drawer.getByRole('button', { name: 'Enviar por e-mail' }).click();
+      await page.waitForTimeout(300);
+      const url = navs.find((u) => u.startsWith('mailto:'));
+      assert.ok(url && url.startsWith(`mailto:${EMAIL}?subject=`), String(url));
+      const params = new URLSearchParams(url.split('?')[1]);
+      assert.strictEqual(params.get('subject'), 'Solicitação de cotação - Sinal Digital');
+      assert.ok(params.get('body').includes('Nome: Joana Conceição'));
+      assert.ok(!url.includes('+'));
+    });
+    await check(`${tag} e-mail inválido bloqueia (e-mail é opcional)`, async () => {
+      await drawer.getByLabel(/^E-mail/).fill('joana@empresa');
+      const before = waOpened.length;
+      await drawer.getByRole('button', { name: 'Enviar pelo WhatsApp' }).click();
+      assert.strictEqual(waOpened.length, before);
+      assert.ok((await drawer.textContent()).includes('Informe um e-mail válido ou deixe em branco.'));
+      await drawer.getByLabel(/^E-mail/).fill('');
+      await page.keyboard.press('Escape');
+    });
+    await check(`${tag} card "Solicitar cotação" abre com a família do card`, async () => {
+      const card = page.locator('#solucao-automacao-seguranca');
+      await card.getByRole('link', { name: /Solicitar cotação/ }).click();
+      await page.waitForSelector('dialog.sd-drawer[open]');
+      assert.strictEqual(await pressed('Automação Comercial / Segurança Eletrônica'), 'true');
+      await page.keyboard.press('Escape');
+    });
+    await check(`${tag} modal "Solicitar cotação" troca o modal pelo painel e o foco volta ao "Saiba mais"`, async () => {
+      const trigger = page.locator('#solucao-servicos-solucoes-digitais').getByRole('button', { name: /Saiba mais/ });
+      await trigger.click();
+      await page.waitForSelector('dialog.sd-dialog[open]');
+      await page.locator('dialog.sd-dialog').getByRole('button', { name: 'Solicitar cotação' }).click();
+      await page.waitForSelector('dialog.sd-drawer[open]');
+      assert.strictEqual(await page.evaluate(() => document.querySelector('dialog.sd-dialog').open), false);
+      assert.strictEqual(await pressed('Serviços / Soluções Digitais'), 'true');
+      await page.keyboard.press('Escape');
+      await page.waitForSelector('dialog.sd-drawer:not([open])', { state: 'attached' });
+      assert.ok((await page.evaluate(() => document.activeElement.textContent)).includes('Saiba mais'));
+    });
+    await check(`${tag} botão do header abre a cotação`, async () => {
+      await page.locator('header').getByRole('link', { name: /Cotar|Solicitar cotação/ }).click();
+      await page.waitForSelector('dialog.sd-drawer[open]');
+      await page.keyboard.press('Escape');
+    });
+    await ctx.close();
+  }
+
+  await check('/#cotacao abre o painel direto e limpa o hash ao fechar', async () => {
+    const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
+    await page.goto(`${BASE}#cotacao`, { waitUntil: 'networkidle' });
+    await page.waitForSelector('dialog.sd-drawer[open]');
+    await page.keyboard.press('Escape');
+    await page.waitForSelector('dialog.sd-drawer:not([open])', { state: 'attached' });
+    await page.waitForFunction(() => location.hash === '', null, { timeout: 2000 });
+    assert.ok(!page.url().includes('#cotacao'), page.url());
+    await page.close();
+  });
 
   // ---------- 4. Links de contato ----------
   console.log('\n[links]');
@@ -267,7 +438,7 @@ async function focusInsideDialog(page) {
 
     await check('todo link wa.me usa 5511999015519 e abre em nova aba com rel', async () => {
       const wa = links.filter((l) => l.href.includes('wa.me'));
-      assert.ok(wa.length >= 9, `só ${wa.length} links de WhatsApp`);
+      assert.ok(wa.length >= 15, `só ${wa.length} links de WhatsApp`);
       for (const l of wa) {
         assert.ok(l.href.startsWith(`https://wa.me/${WA}?text=`), l.href);
         assert.strictEqual(l.target, '_blank');
@@ -276,7 +447,7 @@ async function focusInsideDialog(page) {
     });
     await check('cada card tem WhatsApp contextual com a família', async () => {
       for (const [i, family] of FAMILIES.entries()) {
-        const href = await page.locator('#solucoes article').nth(i).locator('a[href*="wa.me"]').getAttribute('href');
+        const href = await page.locator('#solucoes article').nth(i).locator('a[href*="wa.me"]:not([data-quote-trigger])').getAttribute('href');
         assert.ok(decodeURIComponent(href).includes(`soluções de ${family} da Sinal Digital`), href);
       }
     });
@@ -286,10 +457,9 @@ async function focusInsideDialog(page) {
       for (const l of mails) assert.ok(l.href.startsWith(`mailto:${EMAIL}`), l.href);
     });
     await check('CTAs do hero e contato presentes', async () => {
-      for (const text of ['Consultar soluções', 'Falar com um consultor', 'Entrar em contato pelo WhatsApp', 'Entrar em contato por e-mail']) {
+      for (const text of ['Solicitar cotação', 'Falar com um consultor', 'Entrar em contato pelo WhatsApp', 'Entrar em contato por e-mail']) {
         assert.ok(links.some((l) => l.text.startsWith(text)), text);
       }
-      assert.ok(links.find((l) => l.text.startsWith('Consultar soluções')).href === '#solucoes');
     });
     await check('âncoras internas apontam para ids existentes', async () => {
       const ids = await page.evaluate(() => [...document.querySelectorAll('a[href^="#"]')].map((a) => a.getAttribute('href').slice(1)).filter((id) => !document.getElementById(id)));
@@ -391,6 +561,10 @@ async function focusInsideDialog(page) {
       assert.ok(r.ok, JSON.stringify(r));
       const op = await page.evaluate(() => getComputedStyle(document.querySelector('#contato .reveal')).opacity);
       assert.strictEqual(op, '1');
+    });
+    await check('sem JS: botões de cotação viram link de WhatsApp com mensagem', async () => {
+      const href = await page.locator('[data-quote-trigger]').first().getAttribute('href');
+      assert.ok(href.startsWith(`https://wa.me/${WA}?text=`) && decodeURIComponent(href).includes('cotação'));
     });
     await check('sem JS: menu mobile abre (details nativo)', async () => {
       await page.evaluate(() => window.scrollTo(0, 0));

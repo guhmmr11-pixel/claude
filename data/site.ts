@@ -29,18 +29,13 @@ export const site = {
    * enviar o arquivo, salve-o em `public/images/brand/` e preencha, por exemplo:
    * { src: "/images/brand/logo-sinal-digital.png", alt: "Sinal Digital", width: 480, height: 160 }
    */
-  logo: null as SiteImage | null,
-  /**
-   * Foto do hero (equipamentos ou ambiente corporativo com uso autorizado).
-   * Enquanto estiver `null`, o hero mostra a vitrine de equipamentos por ícones.
-   * Arquivo sugerido: `public/images/hero/hero-sinal-digital.jpg`.
-   */
-  heroImage: null as SiteImage | null
+  logo: null as SiteImage | null
 };
 
 export const whatsappMessages = {
   general: "Olá, gostaria de saber mais sobre as soluções da Sinal Digital",
   consultant: "Olá, gostaria de falar com um consultor da Sinal Digital",
+  quote: "Olá, gostaria de solicitar uma cotação à Sinal Digital.",
   solution: (solutionName: string) =>
     `Olá, gostaria de saber mais sobre soluções de ${solutionName} da Sinal Digital.`
 };
